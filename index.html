@@ -3,38 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Eren'in Stratejik Planner v19</title>
+    <title>Eren'in Stratejik Planner v22</title>
     
     <style>
-        :root { --primary: #4a90e2; --secondary: #f39c12; --special: #9b59b6; --routine: #2ecc71; --bg: #0d1117; --text: #c9d1d9; --card: #161b22; --hp-color: #f85149; --xp-color: #238636; --urgent: #ff7b72; --wait: #8b949e; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding: 15px; margin: 0; }
+        :root { --primary: #4a90e2; --secondary: #f39c12; --special: #9b59b6; --routine: #2ecc71; --bg: #0d1117; --text: #c9d1d9; --card: #161b22; --border: #30363d; --hp-color: #f85149; --xp-color: #238636; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); padding: 15px; margin: 0; line-height: 1.5; }
         .container { max-width: 500px; margin: auto; }
         
-        .stats-container { background: var(--card); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #30363d; }
-        .stat-label { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; }
-        .bar-bg { background: #0d1117; height: 12px; border-radius: 6px; overflow: hidden; margin-bottom: 12px; border: 1px solid #30363d; }
-        .xp-fill { background: var(--xp-color); height: 100%; transition: 0.4s; width: 0%; }
-        .hp-fill { background: var(--hp-color); height: 100%; transition: 0.4s; width: 100%; }
+        /* Stats */
+        .stats-container { background: var(--card); padding: 18px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .stat-label { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; margin-bottom: 6px; letter-spacing: 0.5px; }
+        .bar-bg { background: #0d1117; height: 10px; border-radius: 5px; overflow: hidden; margin-bottom: 12px; border: 1px solid var(--border); }
+        .xp-fill { background: var(--xp-color); height: 100%; transition: 0.5s ease; width: 0%; }
+        .hp-fill { background: var(--hp-color); height: 100%; transition: 0.5s ease; width: 100%; }
 
-        .input-group { background: var(--card); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #30363d; }
-        input, select { background: #0d1117; border: 1px solid #30363d; padding: 10px; color: white; border-radius: 6px; width: 100%; box-sizing: border-box; margin-bottom: 10px; font-size: 14px; }
-        .add-btn { width: 100%; background: #21262d; color: #58a6ff; border: 1px solid #30363d; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        /* Input Form */
+        .input-group { background: var(--card); padding: 16px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border); }
+        .main-input { background: #0d1117; border: 1px solid var(--border); padding: 12px; color: white; border-radius: 8px; width: 100%; box-sizing: border-box; margin-bottom: 12px; font-size: 15px; }
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+        select, input[type="date"] { background: #0d1117; border: 1px solid var(--border); padding: 10px; color: white; border-radius: 8px; font-size: 13px; width: 100%; }
+        
+        .btn-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
+        .add-btn { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer; text-transform: uppercase; }
+        .clear-btn { background: #21262d; color: #8b949e; border: 1px solid var(--border); padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; }
 
+        /* Task Cards */
         .section { margin-bottom: 25px; }
-        .section-header { font-size: 0.9rem; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; font-weight: bold; display: flex; align-items: center; }
-        .section-header::after { content: ""; flex: 1; height: 1px; background: #30363d; margin-left: 10px; }
+        .section-header { font-size: 0.8rem; color: #8b949e; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 12px; font-weight: 800; display: flex; align-items: center; }
+        .section-header::after { content: ""; flex: 1; height: 1px; background: var(--border); margin-left: 10px; }
         
-        .task-card { background: var(--card); padding: 12px; border-radius: 8px; margin-bottom: 6px; display: flex; align-items: center; border: 1px solid #30363d; }
-        .task-card.waiting { border-style: dashed; opacity: 0.7; }
-        .task-card.completed { opacity: 0.5; }
-        .task-card.completed span { text-decoration: line-through; }
+        .task-card { background: var(--card); padding: 14px; border-radius: 10px; margin-bottom: 8px; display: flex; align-items: center; border: 1px solid var(--border); }
+        .task-card.completed { opacity: 0.4; border-style: dashed; }
         
-        .countdown { font-family: monospace; font-size: 11px; margin-left: auto; padding: 2px 6px; border-radius: 4px; background: #0d1117; color: #8b949e; border: 1px solid #30363d; white-space: nowrap; }
-        .urgent { color: var(--urgent); border-color: var(--urgent); }
-        .wait-tag { font-size: 10px; color: var(--wait); margin-left: auto; font-style: italic; }
-        
-        .routine-btn { background: var(--routine); border: none; color: #0d1117; border-radius: 4px; padding: 4px 8px; font-weight: 800; margin-right: 12px; cursor: pointer; }
-        .del-btn { background: none; border: none; color: #484f58; font-size: 18px; cursor: pointer; margin-left: 10px; }
+        .routine-btn { background: var(--routine); border: none; color: #0d1117; border-radius: 6px; min-width: 35px; height: 35px; font-weight: 900; margin-right: 15px; cursor: pointer; }
+        .countdown { font-family: monospace; font-size: 11px; margin-left: auto; padding: 3px 7px; border-radius: 5px; background: #0d1117; color: #8b949e; border: 1px solid var(--border); }
+        .del-btn { background: none; border: none; color: #484f58; font-size: 20px; cursor: pointer; margin-left: 12px; }
     </style>
 </head>
 <body>
@@ -48,23 +51,26 @@
     </div>
 
     <div class="input-group">
-        <input type="text" id="taskInput" placeholder="Görev başlığı">
-        <div style="display:flex; gap:8px;">
+        <input type="text" id="taskInput" class="main-input" placeholder="Görevi tanımla...">
+        <div class="row">
             <select id="taskType">
-                <option value="daily">Günlük (20XP)</option>
-                <option value="weekly">Haftalık (50XP)</option>
-                <option value="routine">Rutin (Sayaç)</option>
-                <option value="special">Özel Gün</option>
+                <option value="daily">GÜNLÜK</option>
+                <option value="weekly">HAFTALIK</option>
+                <option value="routine">RUTİN</option>
+                <option value="special">ETKİNLİK</option>
             </select>
-            <input type="date" id="taskDate" style="flex:1">
+            <input type="date" id="taskDate">
         </div>
-        <button class="add-btn" onclick="addTask()">KAYDET</button>
+        <div class="btn-grid">
+            <button class="add-btn" onclick="addTask()">KAYDET</button>
+            <button class="clear-btn" onclick="clearCompleted()">TEMİZLE</button>
+        </div>
     </div>
 
     <div class="section"><div class="section-header">GÜNLÜK</div><div id="dailyList"></div></div>
     <div class="section"><div class="section-header">HAFTALIK</div><div id="weeklyList"></div></div>
     <div class="section"><div class="section-header">RUTİNLER</div><div id="routineList"></div></div>
-    <div class="section"><div class="section-header">BEKLEYENLER / ETKİNLİKLER</div><div id="specialList"></div></div>
+    <div class="section"><div class="section-header">BEKLEYENLER</div><div id="specialList"></div></div>
 </div>
 
 <script>
@@ -76,34 +82,22 @@
         checkCycle();
         const containers = { daily: 'dailyList', weekly: 'weeklyList', routine: 'routineList', special: 'specialList' };
         Object.values(containers).forEach(id => document.getElementById(id).innerHTML = '');
-
-        const today = new Date().toISOString().split('T')[0];
+        const todayIso = new Date().toISOString().split('T')[0];
 
         state.tasks.forEach((t, i) => {
-            const isFuture = t.startDate && t.startDate > today;
+            const isFuture = t.startDate && t.startDate > todayIso;
             const div = document.createElement('div');
-            div.className = `task-card ${t.completed ? 'completed' : ''} ${isFuture ? 'waiting' : ''}`;
+            div.className = `task-card ${t.completed ? 'completed' : ''}`;
             
-            let extraInfo = '';
-            if(isFuture) {
-                extraInfo = `<span class="wait-tag">⏳ ${t.startDate}</span>`;
-            } else if(!t.completed && (t.type === 'daily' || t.type === 'weekly')) {
-                extraInfo = `<span id="timer-${i}" class="countdown">--:--:--</span>`;
-            }
+            let extra = t.completed ? '' : (isFuture ? `<small style="margin-left:auto;color:#8b949e;font-size:10px;">⏳ ${t.startDate}</small>` : 
+                        ((t.type==='daily'||t.type==='weekly') ? `<span id="timer-${i}" class="countdown">--:--</span>` : ''));
 
-            let inner = '';
-            if(t.type === 'routine') {
-                inner = `<button class="routine-btn" onclick="incRoutine(${i})">${t.count || 0}</button><span>${t.text}</span>`;
-            } else if(t.type === 'special' || isFuture) {
-                inner = `<span>${t.text}</span>${extraInfo}`;
-            } else {
-                inner = `<input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggle(${i})" style="margin-right:12px;"><span>${t.text}</span>${extraInfo}`;
-            }
+            let inner = t.type === 'routine' ? 
+                `<button class="routine-btn" onclick="incRoutine(${i})">${t.count || 0}</button><span style="flex:1">${t.text}</span>` :
+                `<input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggle(${i})" style="width:18px;height:18px;margin-right:12px;"><span style="flex:1">${t.text}</span>${extra}`;
 
-            div.innerHTML = inner + `<button class="del-btn" onclick="del(${i})">×</button>`;
-            
-            const targetList = isFuture ? 'special' : t.type;
-            document.getElementById(containers[targetList]).appendChild(div);
+            div.innerHTML = inner + `<button class="del-btn" onclick="requestDelete(${i})">×</button>`;
+            document.getElementById(containers[isFuture ? 'special' : t.type]).appendChild(div);
         });
 
         document.getElementById('level').innerText = Math.floor(state.score / 250) + 1;
@@ -114,19 +108,51 @@
         localStorage.setItem('planner_state', JSON.stringify(state));
     }
 
+    // İki Aşamalı Silme Doğrulaması
+    function requestDelete(i) {
+        const t = state.tasks[i];
+        
+        // Tamamlanmışlar, Rutinler veya Gelecek görevler cezasız silinir
+        const isFree = t.completed || t.type === 'routine' || t.type === 'special' || (t.startDate > new Date().toISOString().split('T')[0]);
+
+        if (isFree) {
+            if(confirm("Bu öğeyi silmek istediğine emin misin?")) {
+                state.tasks.splice(i, 1);
+                updateUI();
+            }
+            return;
+        }
+
+        // Aktif Günlük/Haftalık görevler için iki aşama
+        const firstStep = confirm(`"${t.text}" görevini silmek üzeresin.\nEmin misin?`);
+        
+        if (firstStep) {
+            const secondStep = confirm(`Silme nedeni dürüstçe seç:\n\nTAMAM: Yanlışlıkla ekledim (HP düşmez)\nİPTAL: Keyfi siliyorum / Yapmayacağım (-15 HP)`);
+            
+            if (!secondStep) {
+                state.hp = Math.max(0, state.hp - 15);
+                alert("Keyfi silme cezası uygulandı: -15 HP!");
+            }
+            state.tasks.splice(i, 1);
+            updateUI();
+        }
+    }
+
     function addTask() {
         const input = document.getElementById('taskInput');
         const dateInput = document.getElementById('taskDate').value;
-        if(!input.value) return;
+        if(!input.value.trim()) return;
         state.tasks.push({ 
-            text: input.value, 
-            type: document.getElementById('taskType').value, 
+            text: input.value, type: document.getElementById('taskType').value, 
             startDate: dateInput || new Date().toISOString().split('T')[0],
-            deadline: dateInput || null, // Haftalık için özel deadline
-            completed: false, 
-            count: 0 
+            deadline: dateInput || null, completed: false, count: 0
         });
         input.value = ''; updateUI();
+    }
+
+    function clearCompleted() {
+        state.tasks = state.tasks.filter(t => !t.completed);
+        updateUI();
     }
 
     function toggle(i) {
@@ -136,24 +162,14 @@
     }
 
     function incRoutine(i) { state.tasks[i].count++; state.score += 5; updateUI(); }
-    
-    function del(i) {
-        const t = state.tasks[i];
-        const today = new Date().toISOString().split('T')[0];
-        if(!t.completed && ! (t.startDate > today) && (t.type === 'daily' || t.type === 'weekly')) state.hp -= 10;
-        state.tasks.splice(i, 1); updateUI();
-    }
 
     function checkCycle() {
         const now = new Date();
-        const todayIso = now.toISOString().split('T')[0];
         if (state.lastCheck !== now.toDateString()) {
             let pen = 0;
             state.tasks.forEach(t => {
-                const isActive = t.startDate <= todayIso;
-                if(isActive && !t.completed) {
+                if(t.startDate <= now.toISOString().split('T')[0] && !t.completed) {
                     if(t.type === 'daily') pen += 20;
-                    // Eğer özel deadline varsa ve geçmişse, ya da pazar gecesiyse
                     if(t.type === 'weekly' && (t.deadline === state.lastCheck || now.getDay() === 1)) pen += 40;
                 }
                 if(t.type === 'daily') t.completed = false;
@@ -167,32 +183,15 @@
     setInterval(() => {
         const now = new Date();
         state.tasks.forEach((t, i) => {
-            const el = document.getElementById(`timer-${i}`);
-            if(!el) return;
-
-            let target;
-            if (t.type === 'daily') {
-                target = new Date(now); target.setHours(24, 0, 0, 0);
-            } else {
-                if (t.deadline && t.deadline !== now.toISOString().split('T')[0]) {
-                    target = new Date(t.deadline); target.setHours(24, 0, 0, 0);
-                } else {
-                    target = new Date(now); target.setDate(now.getDate() + (7 - now.getDay()) % 7 || 7); target.setHours(24, 0, 0, 0);
-                }
-            }
-
+            const el = document.getElementById(`timer-${i}`); if(!el) return;
+            let target = (t.type === 'daily') ? new Date(now).setHours(24,0,0,0) : (t.deadline ? new Date(t.deadline).setHours(24,0,0,0) : new Date(now).setDate(now.getDate()+(7-now.getDay())%7||7));
             const diff = target - now;
-            if (diff < 0) { el.innerText = "SÜRE DOLDU"; return; }
-
-            const d = Math.floor(diff / 86400000);
+            if (diff < 0) { el.innerText = "DOLDU"; return; }
             const h = Math.floor((diff % 86400000) / 3600000);
             const m = Math.floor((diff % 3600000) / 60000);
-            const s = Math.floor((diff % 60000) / 1000);
-
-            el.innerText = (d > 0 ? d + "g " : "") + `${h}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-            if(diff < 10800000) el.classList.add('urgent'); // 3 saat
+            el.innerText = `${h}:${m.toString().padStart(2,'0')}`;
         });
-    }, 1000);
+    }, 10000);
 
     updateUI();
 </script>
