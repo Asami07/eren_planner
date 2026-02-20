@@ -3,230 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Eren'in Pro Planner v12</title>
+    <title>Eren'in Hardcore Planner v14</title>
     
     <meta name="theme-color" content="#2c3e50">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <link rel="manifest" href="data:application/manifest+json,{'name':'ErenPlanner','short_name':'Planner','start_url':'.','display':'standalone','background_color':'#f4f7f6','theme_color':'#2c3e50','icons':[{'src':'https://cdn-icons-png.flaticon.com/512/3209/3209265.png','sizes':'512x512','type':'image/png'}]}">
 
     <style>
-        :root { --primary: #4a90e2; --secondary: #f39c12; --special: #9b59b6; --routine: #2ecc71; --bg: #f4f7f6; --text: #2c3e50; --success: #2ecc71; --danger: #e74c3c; --undo: #34495e; --hp-color: #ff4757; }
-        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); padding: 10px; margin: 0; user-select: none; }
+        :root { --primary: #4a90e2; --secondary: #f39c12; --special: #9b59b6; --routine: #2ecc71; --bg: #f4f7f6; --text: #2c3e50; --success: #2ecc71; --danger: #e74c3c; --hp-color: #ff4757; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); padding: 10px; margin: 0; }
         .container { width: 100%; max-width: 600px; margin: auto; }
         
-        /* Stats & Bars */
         .stats-container { background: #2c3e50; color: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .stat-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
         .bar-bg { background: rgba(255,255,255,0.1); height: 10px; border-radius: 5px; overflow: hidden; margin-bottom: 10px; }
         .xp-fill { background: var(--success); height: 100%; transition: 0.5s ease; width: 0%; }
         .hp-fill { background: var(--hp-color); height: 100%; transition: 0.5s ease; width: 100%; }
 
-        /* Input Area */
         .input-area { background: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #eee; }
         .input-row { display: flex; gap: 8px; margin-bottom: 10px; }
         input, select { padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; flex: 1; }
-        .add-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 14px; border-radius: 10px; font-weight: bold; font-size: 1rem; }
+        .add-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 14px; border-radius: 10px; font-weight: bold; }
 
-        /* Task List */
-        .column { background: white; padding: 15px; border-radius: 15px; border: 1px solid #eee; }
-        .task-item { display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #f1f1f1; }
-        .task-item:last-child { border-bottom: none; }
-        .task-item.completed span { text-decoration: line-through; opacity: 0.5; }
-        .time-tag { font-size: 0.75rem; color: var(--primary); font-weight: bold; margin-right: 10px; background: #eef5ff; padding: 2px 6px; border-radius: 4px; }
-        
-        .notif-btn { background: #fff3cd; color: #856404; padding: 10px; border-radius: 10px; margin-bottom: 10px; text-align: center; font-size: 0.85rem; border: 1px solid #ffeeba; cursor: pointer; }
+        .task-item { display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #f1f1f1; background: white; margin-bottom: 5px; border-radius: 10px; }
+        .task-item.completed { opacity: 0.5; background: #f9f9f9; }
+        .task-item.completed span { text-decoration: line-through; }
+        .tag { font-size: 0.65rem; padding: 3px 7px; border-radius: 5px; margin-right: 8px; font-weight: bold; color: white; text-transform: uppercase; }
+        .tag-daily { background: var(--primary); }
+        .tag-weekly { background: var(--secondary); }
+        .tag-special { background: var(--special); }
+        .tag-routine { background: var(--routine); }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div id="notifBanner" class="notif-btn" onclick="requestPermission()">
-            🔔 Bildirimleri ve Hatırlatıcıları Aç
-        </div>
-
         <div class="stats-container">
-            <div class="stat-row">
-                <span>⭐ Level <span id="level">1</span></span>
-                <span><span id="score">0</span> XP</span>
-            </div>
+            <div class="stat-row"><span>⭐ Lv <span id="level">1</span></span><span><span id="score">0</span> XP</span></div>
             <div class="bar-bg"><div id="xpBar" class="xp-fill"></div></div>
-            
-            <div class="stat-row">
-                <span style="color:var(--hp-color)">❤️ Health (HP)</span>
-                <span id="hpText">100/100</span>
-            </div>
+            <div class="stat-row"><span style="color:var(--hp-color)">❤️ Can (HP)</span><span id="hpText">100/100</span></div>
             <div class="bar-bg"><div id="hpBar" class="hp-fill"></div></div>
         </div>
 
         <div class="input-area">
             <div class="input-row">
-                <input type="text" id="taskInput" placeholder="Görev nedir?">
-                <select id="taskType" style="flex: 0.4;">
+                <input type="text" id="taskInput" placeholder="Yeni görev...">
+                <select id="taskType" onchange="document.getElementById('taskDate').style.display=(this.value=='special'?'block':'none')">
                     <option value="daily">Günlük</option>
+                    <option value="weekly">Haftalık</option>
                     <option value="routine">Rutin</option>
+                    <option value="special">Özel Gün</option>
                 </select>
             </div>
-            <div class="input-row" style="align-items: center;">
-                <span style="font-size: 0.8rem; color: #666;">Hatırlatıcı:</span>
+            <div class="input-row">
                 <input type="time" id="taskTime">
+                <input type="date" id="taskDate" style="display:none;">
             </div>
-            <button class="add-btn" onclick="addTask()">Görevi Başlat</button>
+            <button class="add-btn" onclick="addTask()">🎯 Görevi Tanımla</button>
         </div>
 
-        <div class="column">
-            <h3 style="margin-top:0">Görev Listesi</h3>
-            <div id="taskList"></div>
-        </div>
+        <div id="taskList"></div>
     </div>
 
     <script>
-        // --- VERİ KURTARMA VE BAŞLATMA ---
-        const oldScore = parseInt(localStorage.getItem('score')) || 0;
-        const oldTasks = JSON.parse(localStorage.getItem('tasks')) || [];
-        
         let state = JSON.parse(localStorage.getItem('planner_state')) || {
-            tasks: oldTasks,
-            score: oldScore,
-            hp: 100,
-            lastCheck: new Date().toDateString()
+            tasks: [], score: 0, hp: 100, lastCheck: new Date().toDateString()
         };
 
-        // Eski verileri temizle (Artık yeni sisteme geçtik)
-        if(localStorage.getItem('score')) {
-            localStorage.removeItem('score');
-            localStorage.removeItem('tasks');
-        }
-
-        const XP_PER_LEVEL = 500;
-
-        function requestPermission() {
-            Notification.requestPermission().then(permission => {
-                if (permission === "granted") {
-                    document.getElementById('notifBanner').style.display = 'none';
-                    new Notification("Harika!", { body: "Bildirimler aktif edildi." });
-                }
-            });
-        }
-
         function updateUI() {
-            checkPenalty(); // Gün değiştiyse cezayı uygula
-            
+            checkPenalty();
             const list = document.getElementById('taskList');
             list.innerHTML = '';
             
-            // Stats
-            const level = Math.floor(state.score / XP_PER_LEVEL) + 1;
-            const currentLevelXp = state.score % XP_PER_LEVEL;
-            
+            const level = Math.floor(state.score / 500) + 1;
             document.getElementById('level').innerText = level;
             document.getElementById('score').innerText = state.score;
-            document.getElementById('xpBar').style.width = (currentLevelXp / XP_PER_LEVEL * 100) + "%";
-            
+            document.getElementById('xpBar').style.width = (state.score % 500 / 500 * 100) + "%";
             document.getElementById('hpBar').style.width = state.hp + "%";
             document.getElementById('hpText').innerText = state.hp + "/100";
             
-            // Task List
             state.tasks.forEach((task, index) => {
                 const el = document.createElement('div');
                 el.className = `task-item ${task.completed ? 'completed' : ''}`;
-                const timeHtml = task.time ? `<span class="time-tag">${task.time}</span>` : '';
-                
                 el.innerHTML = `
                     <input type="checkbox" style="width:20px; height:20px; margin-right:12px;" ${task.completed ? 'checked' : ''} onchange="toggleTask(${index})">
-                    ${timeHtml}
-                    <span style="flex:1">${task.text}</span>
-                    <button onclick="deleteTask(${index})" style="background:none; border:none; color:#ff4757; font-size:1.2rem; margin-left:10px;">×</button>
+                    <span class="tag tag-${task.type}">${task.type}</span>
+                    <span style="flex:1">${task.text} <small style="display:block; font-size:0.7rem; color:#888">${task.time || ''} ${task.date || ''}</small></span>
+                    <button onclick="deleteTask(${index})" style="background:none; border:none; color:red; font-size:1.2rem;">×</button>
                 `;
                 list.appendChild(el);
             });
-
             localStorage.setItem('planner_state', JSON.stringify(state));
         }
 
         function addTask() {
             const input = document.getElementById('taskInput');
-            const type = document.getElementById('taskType').value;
-            const time = document.getElementById('taskTime').value;
-
             if (!input.value.trim()) return;
-
-            state.tasks.push({
-                text: input.value,
-                type: type,
-                time: time,
-                completed: false,
-                notified: false,
-                created: new Date().toDateString()
+            state.tasks.push({ 
+                text: input.value, 
+                type: document.getElementById('taskType').value, 
+                time: document.getElementById('taskTime').value, 
+                date: document.getElementById('taskDate').value,
+                completed: false, 
+                notified: false 
             });
-
-            input.value = '';
-            document.getElementById('taskTime').value = '';
-            updateUI();
+            input.value = ''; updateUI();
         }
 
         function toggleTask(index) {
-            const task = state.tasks[index];
-            task.completed = !task.completed;
-            state.score += task.completed ? 20 : -20;
-            if(state.score < 0) state.score = 0;
+            state.tasks[index].completed = !state.tasks[index].completed;
+            state.score += state.tasks[index].completed ? 20 : -20;
             updateUI();
         }
 
         function deleteTask(index) {
+            // CEZA: Eğer günlük veya haftalık görev yapılmadan silinirse anında HP düşer
+            const task = state.tasks[index];
+            if (!task.completed && (task.type === 'daily' || task.type === 'weekly')) {
+                state.hp -= 10;
+                alert("Görevi yapmadan sildiğin için 10 HP kaybettin! Kaçmak yok.");
+            }
             state.tasks.splice(index, 1);
             updateUI();
         }
 
         function checkPenalty() {
-            const today = new Date().toDateString();
-            if (state.lastCheck !== today) {
-                // Sadece "günlük" tipindeki ve tamamlanmamış görevler için ceza ver
-                const failedTasks = state.tasks.filter(t => t.type === 'daily' && !t.completed);
-                const penalty = failedTasks.length * 10;
+            const todayStr = new Date().toDateString();
+            if (state.lastCheck !== todayStr) {
+                let penalty = 0;
+                // Dünden kalan yapılmamış günlük görevler
+                const uncompleted = state.tasks.filter(t => t.type === 'daily' && !t.completed);
+                penalty += uncompleted.length * 15;
 
                 if (penalty > 0) {
                     state.hp -= penalty;
-                    alert(`Dün yapmadığın ${failedTasks.length} görev için ${penalty} HP kaybettin!`);
+                    alert(`Yeni gün başladı. Dünden kalan görevler yüzünden ${penalty} HP kaybettin!`);
                 }
 
                 if (state.hp <= 0) {
-                    state.score = Math.max(0, state.score - XP_PER_LEVEL);
+                    state.score = Math.max(0, state.score - 500);
                     state.hp = 100;
-                    alert("Canın bitti! Level düştün ve canın yenilendi.");
+                    alert("Canın bitti! Level düştün.");
                 }
 
-                // Yeni günde günlük görevlerin durumunu sıfırla (Rutinler gibi)
+                // Günlükleri temizle/sıfırla
                 state.tasks.forEach(t => { if(t.type === 'daily') t.completed = false; t.notified = false; });
-                state.lastCheck = today;
+                state.lastCheck = todayStr;
             }
         }
 
-        // Bildirim Kontrol Döngüsü (Her 30 saniyede bir)
+        // Bildirim Sistemi
         setInterval(() => {
-            if (Notification.permission !== "granted") return;
-            
             const now = new Date();
-            const currentTime = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
-
-            state.tasks.forEach(task => {
-                if (task.time === currentTime && !task.completed && !task.notified) {
-                    new Notification("Görev Vakti! 🎯", {
-                        body: task.text,
-                        icon: 'https://cdn-icons-png.flaticon.com/512/3209/3209265.png'
-                    });
-                    task.notified = true;
-                    localStorage.setItem('planner_state', JSON.stringify(state));
+            const cur = now.getHours().toString().padStart(2,'0')+":"+now.getMinutes().toString().padStart(2,'0');
+            state.tasks.forEach(t => {
+                if (t.time === cur && !t.completed && !t.notified && Notification.permission === "granted") {
+                    new Notification("🎯 Görev Vakti!", { body: t.text });
+                    t.notified = true;
                 }
             });
         }, 30000);
-
-        // İlk açılışta bildirim butonunu gizle/göster
-        if (Notification.permission === "granted") {
-            document.getElementById('notifBanner').style.display = 'none';
-        }
 
         updateUI();
     </script>
 </body>
 </html>
-
